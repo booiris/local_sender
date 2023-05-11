@@ -1,0 +1,7 @@
+[workspace]
+members = ["shared", "server"]
+
+[profile.release]
+strip = true
+lto = true
+opt-level = "s"
