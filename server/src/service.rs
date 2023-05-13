@@ -4,7 +4,7 @@ use anyhow::Context;
 use axum::{
     error_handling::HandleErrorLayer,
     http::{header, Method},
-    routing::{get, get_service},
+    routing::{get, get_service, post},
     Router,
 };
 use tower::ServiceBuilder;
@@ -15,7 +15,7 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use crate::handler::{list_file, temp};
+use crate::handler::{list_file, message, temp};
 
 #[tokio::main(flavor = "multi_thread")]
 pub async fn run() -> shared::Result<()> {
@@ -56,6 +56,7 @@ pub async fn run() -> shared::Result<()> {
     let app = Router::new()
         .nest_service("/", get_service(ServeDir::new("asset")))
         .route("/ls", get(list_file::ls))
+        .route("/msg", post(message::message))
         .route(
             "/api/chat-process",
             get(temp::temp).route_layer(rate_limit_layer.clone()),
@@ -63,7 +64,7 @@ pub async fn run() -> shared::Result<()> {
         .layer(TraceLayer::new_for_http())
         .layer(cors);
 
-    let port = "8080".parse::<u16>()?;
+    let port = "18888".parse::<u16>()?;
     let addr_v6 = SocketAddr::new(IpAddr::V6(Ipv6Addr::UNSPECIFIED), port as _);
     log::info!("Listening on {addr_v6}");
     axum::Server::bind(&addr_v6)

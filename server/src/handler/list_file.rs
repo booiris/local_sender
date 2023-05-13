@@ -1,6 +1,8 @@
 use axum::{extract::Query, Json};
 use serde::{Deserialize, Serialize};
 
+use crate::model::http_resp::{BaseResponse, ErrorResponse};
+
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(default)]
 pub struct LsRequest {
@@ -11,9 +13,11 @@ pub struct LsRequest {
 #[serde(default)]
 pub struct LsResponse {
     pub files: Vec<String>,
+
+    pub base: BaseResponse,
 }
 
-pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, String> {
+pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, ErrorResponse> {
     let base = std::env::current_dir()
         .map_err(|e| "[ls] can not get base dir. err: ".to_owned() + &e.to_string())?;
 
@@ -21,7 +25,9 @@ pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, String
         .map_err(|e| "[ls] path invalid. err: ".to_owned() + &e.to_string())?;
 
     if !path.starts_with(base.clone()) {
-        return Err("[ls] path invalid. err: path not in base dir".to_owned());
+        return Err("[ls] path invalid. err: path not in base dir"
+            .to_owned()
+            .into());
     }
 
     let mut files = vec![];
@@ -37,7 +43,10 @@ pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, String
         }
     }
 
-    Ok(Json(LsResponse { files }))
+    Ok(Json(LsResponse {
+        files,
+        ..Default::default()
+    }))
 }
 
 #[cfg(test)]
@@ -49,6 +58,7 @@ mod test {
         {
             let expect = LsResponse {
                 files: ["Cargo.toml".to_owned(), "src".to_owned()].to_vec(),
+                ..Default::default()
             };
 
             let req = LsRequest { path: "./".into() };
@@ -58,7 +68,12 @@ mod test {
         }
 
         {
-            let expect = "[ls] path invalid. err: path not in base dir";
+            let expect = ErrorResponse {
+                base: BaseResponse {
+                    code: -1,
+                    msg: "[ls] path invalid. err: path not in base dir".to_owned(),
+                },
+            };
 
             let req = LsRequest { path: "../".into() };
             let resp = ls(Query(req)).await.expect_err("expect err, return ok");
@@ -67,7 +82,12 @@ mod test {
         }
 
         {
-            let expect = "[ls] path invalid. err: No such file or directory (os error 2)";
+            let expect = ErrorResponse {
+                base: BaseResponse {
+                    code: -1,
+                    msg: "[ls] path invalid. err: No such file or directory (os error 2)".into(),
+                },
+            };
 
             let req = LsRequest { path: "..?".into() };
             let resp = ls(Query(req)).await.expect_err("expect err, return ok");

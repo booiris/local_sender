@@ -1,0 +1,9 @@
+## Test ls api
+
+GET http://localhost:18888/ls?path=./
+
+### Error path
+GET http://localhost:18888/ls?path=..??/
+
+### invalid path
+GET http://localhost:18888/ls?path=../

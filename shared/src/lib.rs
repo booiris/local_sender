@@ -1,3 +1,5 @@
+pub mod model;
+
 pub type Result<F, E = anyhow::Error> = anyhow::Result<F, E>;
 
 pub fn init_env() {
