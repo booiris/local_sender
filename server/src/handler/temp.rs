@@ -10,7 +10,7 @@ pub struct TempRequest {}
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq)]
 #[serde(default)]
 pub struct TempResponse {
-    pub base: BaseResponse,
+    base: BaseResponse,
 }
 
 pub async fn temp(Json(_req): Json<TempRequest>) -> Result<Json<TempResponse>, ErrorResponse> {

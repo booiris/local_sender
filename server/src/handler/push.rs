@@ -10,7 +10,7 @@ pub struct PushRequest {}
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq)]
 #[serde(default)]
 pub struct PushResponse {
-    pub base: BaseResponse,
+    base: BaseResponse,
 }
 
 pub async fn push(Json(_req): Json<PushRequest>) -> Result<Json<PushResponse>, ErrorResponse> {
