@@ -8,6 +8,7 @@ pub fn init_env() {
         env_logger::init_from_env(Env::default().filter_or(DEFAULT_FILTER_ENV, "info"));
         log::error!("Failed to init log4rs: {}", e);
     }
+    panic_handler();
     if let Ok(v) = ini::Ini::load_from_file(".env") {
         if let Some(section) = v.section(None::<String>) {
             section.iter().for_each(|(k, v)| {
@@ -16,4 +17,12 @@ pub fn init_env() {
             });
         }
     }
+}
+
+fn panic_handler() {
+    use std::panic;
+
+    panic::set_hook(Box::new(|info| {
+        log::error!("panic occurred: {:#?}", info);
+    }));
 }

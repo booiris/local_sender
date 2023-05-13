@@ -4,18 +4,17 @@ use anyhow::Context;
 use axum::{
     error_handling::HandleErrorLayer,
     http::{header, Method},
-    routing::{get, get_service, post},
+    routing::{get, post},
     Router,
 };
 use tower::ServiceBuilder;
 use tower_governor::{errors::display_error, governor::GovernorConfigBuilder, GovernorLayer};
 use tower_http::{
     cors::{Any, CorsLayer},
-    services::ServeDir,
     trace::TraceLayer,
 };
 
-use crate::handler::{list_file, message, temp};
+use crate::handler::*;
 
 #[tokio::main(flavor = "multi_thread")]
 pub async fn run() -> shared::Result<()> {
@@ -54,12 +53,16 @@ pub async fn run() -> shared::Result<()> {
         ])
         .allow_origin(Any);
     let app = Router::new()
-        .nest_service("/", get_service(ServeDir::new("asset")))
+        .route("/", get(temp::temp).route_layer(rate_limit_layer.clone()))
         .route("/ls", get(list_file::ls))
         .route("/msg", post(message::message))
         .route(
-            "/api/chat-process",
-            get(temp::temp).route_layer(rate_limit_layer.clone()),
+            "/pull",
+            post(pull::pull).route_layer(rate_limit_layer.clone()),
+        )
+        .route(
+            "/push",
+            post(push::push).route_layer(rate_limit_layer.clone()),
         )
         .layer(TraceLayer::new_for_http())
         .layer(cors);

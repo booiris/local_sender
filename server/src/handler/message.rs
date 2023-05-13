@@ -21,7 +21,7 @@ pub async fn message(
     Json(req): Json<MessageRequest>,
 ) -> Result<Json<MessageResponse>, ErrorResponse> {
     log::info!("message: {:?}", req);
-    Ok(Json(MessageResponse::default()))
+    todo!();
 }
 
 #[cfg(test)]

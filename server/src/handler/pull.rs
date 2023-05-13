@@ -5,15 +5,15 @@ use crate::model::http_resp::{BaseResponse, ErrorResponse};
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 #[serde(default)]
-pub struct TempRequest {}
+pub struct PullRequest {}
 
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq)]
 #[serde(default)]
-pub struct TempResponse {
+pub struct PullResponse {
     pub base: BaseResponse,
 }
 
-pub async fn temp(Json(_req): Json<TempRequest>) -> Result<Json<TempResponse>, ErrorResponse> {
+pub async fn pull(Json(_req): Json<PullRequest>) -> Result<Json<PullResponse>, ErrorResponse> {
     todo!();
 }
 
@@ -22,5 +22,5 @@ mod test {
     use super::*;
 
     #[tokio::test]
-    async fn test_temp() {}
+    async fn test_pull() {}
 }
