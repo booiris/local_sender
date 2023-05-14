@@ -13,10 +13,13 @@
   },
   "dependencies": {
     "pinia": "^2.0.36",
+    "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.2",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "vuetify": "^3.2.4"
   },
   "devDependencies": {
+    "@mdi/font": "^7.2.96",
     "@rushstack/eslint-patch": "^1.2.0",
     "@tsconfig/node18": "^2.0.1",
     "@types/node": "^18.16.8",

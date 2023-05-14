@@ -1,14 +1,20 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 
 import App from './App.vue'
-import router from './router'
+import { setupRouter } from './router'
+import { setupStore } from './stores/counter'
+import setVuetify from './plugins/vuetify'
 
-const app = createApp(App)
+async function bootstrap() {
+  const app = createApp(App)
 
-app.use(createPinia())
-app.use(router)
+  setVuetify(app)
+  setupStore(app)
+  await setupRouter(app)
 
-app.mount('#app')
+  app.mount('#app')
+}
+
+bootstrap()
