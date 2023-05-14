@@ -61,18 +61,12 @@ mod test {
     async fn test_ls() {
         {
             let expect = LsResponse {
-                files: [
-                    "server".to_owned(),
-                    "测试1.jpg".to_owned(),
-                    "test.txt".to_owned(),
-                    "README.md".to_owned(),
-                ]
-                .to_vec(),
+                files: ["test.txt".to_owned()].to_vec(),
                 ..Default::default()
             };
 
             let req = LsRequest {
-                path: "./test/test_file".into(),
+                path: "./test/test_file/test_ls/".into(),
             };
             let resp = ls(Query(req)).await.expect("expect ok, return err").0;
 
