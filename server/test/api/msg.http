@@ -1,0 +1,10 @@
+## Test msg api
+
+Post http://localhost:18888/msg
+content-type: application/json
+
+{
+    "msg": "Hello, World!",
+    "time": {{$timestamp}},
+    "from_id": 123
+}
