@@ -61,7 +61,13 @@ mod test {
     async fn test_ls() {
         {
             let expect = LsResponse {
-                files: ["测试1.jpg".to_owned()].to_vec(),
+                files: [
+                    "server".to_owned(),
+                    "测试1.jpg".to_owned(),
+                    "test.txt".to_owned(),
+                    "README.md".to_owned(),
+                ]
+                .to_vec(),
                 ..Default::default()
             };
 

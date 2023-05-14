@@ -61,6 +61,10 @@ pub async fn run() -> shared::Result<()> {
             post(pull::pull).route_layer(rate_limit_layer.clone()),
         )
         .route(
+            "/pull_stream",
+            post(pull_stream::pull_stream).route_layer(rate_limit_layer.clone()),
+        )
+        .route(
             "/push",
             post(push::push).route_layer(rate_limit_layer.clone()),
         )

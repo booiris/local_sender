@@ -30,7 +30,8 @@ pub struct PullRequest {
 pub struct PullResponse {
     data: Option<String>,
     method: PullMethod,
-    size: u64,
+    // javascipt only support 53 bits integer
+    size: String,
 
     base: BaseResponse,
 }
@@ -50,7 +51,7 @@ pub async fn pull(Query(req): Query<PullRequest>) -> Result<Json<PullResponse>, 
     }
 
     if !path.is_file() {
-        return Err("[ls] path invalid. err: path is not a file"
+        return Err("[pull] path invalid. err: path is not a file"
             .to_owned()
             .into());
     }
@@ -77,18 +78,18 @@ pub async fn pull(Query(req): Query<PullRequest>) -> Result<Json<PullResponse>, 
             Ok(Json(PullResponse {
                 data: Some(data),
                 method: PullMethod::Immediate,
-                size,
+                size: size.to_string(),
                 ..Default::default()
             }))
         }
         STREAM_THRESHOLD..=ASYNC_THRESHOLD_LOW => Ok(Json(PullResponse {
             method: PullMethod::Stream,
-            size,
+            size: size.to_string(),
             ..Default::default()
         })),
         ASYNC_THRESHOLD..=u64::MAX => Ok(Json(PullResponse {
             method: PullMethod::Async,
-            size,
+            size: size.to_string(),
             ..Default::default()
         })),
     }
