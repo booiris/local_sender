@@ -14,9 +14,6 @@ const vuetify = createVuetify({
       mdi
     }
   },
-  theme: {
-    defaultTheme: 'light'
-  },
   components,
   directives
 })
