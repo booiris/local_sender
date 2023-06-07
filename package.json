@@ -12,7 +12,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "axios": "^1.4.0",
+    "internal-ip": "^7.0.0",
     "pinia": "^2.0.36",
+    "vite-plugin-pwa": "^0.16.3",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0",

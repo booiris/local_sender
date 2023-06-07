@@ -47,24 +47,21 @@ const files = reactive([
     title: 'Kitchen remodel'
   }
 ])
+
+
+
+
 </script>
 
 <template>
   <v-col>
-    <!--TODO -->
     <v-card min-height="h-auto" rounded="lg">
-      <v-container class="px-15 py-8">
+      <v-container class="px-14 py-8">
         <v-list height="75dvh" class="overflow-y-auto" lines="two">
           <v-list-subheader inset> Folders </v-list-subheader>
 
-          <v-list-item
-            v-for="folder in folders"
-            :key="folder.title"
-            :title="folder.title"
-            :subtitle="folder.subtitle"
-            link
-            rounded="lg"
-          >
+          <v-list-item v-for="folder in folders" :key="folder.title" :title="folder.title" :subtitle="folder.subtitle"
+            link rounded="lg">
             <template v-slot:prepend>
               <v-avatar color="grey-lighten-1">
                 <v-icon color="white">mdi-folder</v-icon>
@@ -80,14 +77,8 @@ const files = reactive([
 
           <v-list-subheader inset>Files</v-list-subheader>
 
-          <v-list-item
-            v-for="file in files"
-            :key="file.title"
-            :title="file.title"
-            :subtitle="file.subtitle"
-            link
-            rounded="lg"
-          >
+          <v-list-item v-for="file in files" :key="file.title" :title="file.title" :subtitle="file.subtitle" link
+            rounded="lg">
             <template v-slot:prepend>
               <v-avatar :color="file.color">
                 <v-icon color="white">{{ file.icon }}</v-icon>
