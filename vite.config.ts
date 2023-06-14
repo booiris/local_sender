@@ -11,17 +11,17 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
         vue(),
         vuetify({ autoImport: true }),
         env.VITE_GLOB_APP_PWA === 'true' &&
-            VitePWA({
-                injectRegister: 'auto',
-                manifest: {
-                    name: 'chatGPT',
-                    short_name: 'chatGPT',
-                    icons: [
-                        { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
-                        { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' }
-                    ]
-                }
-            })
+        VitePWA({
+            injectRegister: 'auto',
+            manifest: {
+                name: 'chatGPT',
+                short_name: 'chatGPT',
+                icons: [
+                    { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+                    { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' }
+                ]
+            }
+        })
     ]
 }
 
@@ -66,7 +66,10 @@ export default defineConfig(async (env) => {
             // don't minify for debug builds
             minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
             // produce sourcemaps for debug builds
-            sourcemap: !!process.env.TAURI_DEBUG
+            sourcemap: !!process.env.TAURI_DEBUG,
+            commonjsOptions: {
+                include: [/linked-dep/, /node_modules/],
+            },
         }
     }
 })

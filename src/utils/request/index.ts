@@ -18,10 +18,6 @@ interface HttpOption {
     afterRequest?: () => void
 }
 
-export interface Response<T extends BaseResponse> {
-    base?: T
-}
-
 
 // let onProgressId = 0
 
@@ -35,8 +31,8 @@ function http<T extends BaseResponse>({
     beforeRequest,
     afterRequest
 }: HttpOption) {
-    const successHandler = (res: AxiosResponse<Response<T>>) => {
-        if (res.status === 200 && res.data.base?.code === 0) return res.data
+    const successHandler = (res: AxiosResponse<T>) => {
+        if (res.status === 200 && res.data.base.code === 0) return res.data
 
         return Promise.reject(res.data)
     }
@@ -95,7 +91,7 @@ export function post<T extends BaseResponse>({
     signal,
     beforeRequest,
     afterRequest
-}: HttpOption): Promise<Response<T>> {
+}: HttpOption): Promise<T> {
     return http<T>({
         url,
         method,
@@ -117,7 +113,7 @@ export function get<T extends BaseResponse>({
     signal,
     beforeRequest,
     afterRequest
-}: HttpOption): Promise<Response<T>> {
+}: HttpOption): Promise<T> {
     return http<T>({
         url,
         method,

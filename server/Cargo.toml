@@ -21,3 +21,4 @@ base64ct = { version = "1.6", features = ["alloc"] }
 tokio-util = "0.7"
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"]}
+human_bytes = "0.4.2"

@@ -1,8 +1,14 @@
+use human_bytes::human_bytes;
+
 use axum::{extract::Query, Json};
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    model::http_resp::{BaseResponse, ErrorResponse},
+    model::{
+        file::FileInfo,
+        http_resp::{BaseResponse, ErrorResponse},
+    },
     utils::check_valid_path,
 };
 
@@ -15,7 +21,8 @@ pub struct LsRequest {
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq)]
 #[serde(default)]
 pub struct LsResponse {
-    files: Vec<String>,
+    files: Vec<FileInfo>,
+    dirs: Vec<FileInfo>,
 
     base: BaseResponse,
 }
@@ -35,20 +42,36 @@ pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, ErrorR
     }
 
     let mut files = vec![];
+    let mut dirs = vec![];
     for entry in (std::fs::read_dir(path)
         .map_err(|e| "[ls] can not read dir. err: ".to_owned() + &e.to_string())?)
     .flatten()
     {
         let path = entry.path();
-        if let Some(path) = path.file_name() {
-            if let Some(path) = path.to_str() {
-                files.push(path.to_owned());
+        if let (Ok(meta), Some(file_name)) = (path.metadata(), path.file_name()) {
+            if let (Some(file_name), Ok(modified)) = (file_name.to_str(), meta.modified()) {
+                let modified: DateTime<Local> = modified.into();
+                let modified = modified.format("%Y/%m/%d %H:%M").to_string();
+                if meta.is_dir() {
+                    dirs.push(FileInfo {
+                        name: file_name.to_owned(),
+                        size: "0 B".into(),
+                        modified_time: modified,
+                    });
+                } else {
+                    files.push(FileInfo {
+                        name: file_name.to_owned(),
+                        size: human_bytes(meta.len() as f64).to_string(),
+                        modified_time: modified,
+                    });
+                }
             }
         }
     }
 
     Ok(Json(LsResponse {
         files,
+        dirs,
         ..Default::default()
     }))
 }
@@ -61,14 +84,19 @@ mod test {
     async fn test_ls() {
         {
             let expect = LsResponse {
-                files: ["test.txt".to_owned()].to_vec(),
+                files: vec![FileInfo {
+                    name: "test.txt".into(),
+                    size: "9 B".into(),
+                    modified_time: "".into(),
+                }],
                 ..Default::default()
             };
 
             let req = LsRequest {
                 path: "./test/test_file/test_ls/".into(),
             };
-            let resp = ls(Query(req)).await.expect("expect ok, return err").0;
+            let mut resp = ls(Query(req)).await.expect("expect ok, return err").0;
+            resp.files[0].modified_time = expect.files[0].modified_time.clone();
 
             assert_eq!(expect, resp);
         }

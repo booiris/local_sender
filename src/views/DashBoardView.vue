@@ -1,14 +1,5 @@
 <script setup lang="ts">
 import { AppBar, DashBoardSideBar, DashBoardMain } from '@/components'
-import { Ls } from '../api/ls'
-
-Ls()
-    .then((res) => {
-        console.log(res)
-    })
-    .catch((e) => {
-        console.error(e)
-    })
 </script>
 
 <template>

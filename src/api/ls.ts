@@ -5,14 +5,21 @@ export interface LsReqeust {
     path: string
 }
 
-export interface LsResponse {
-    files: string[]
-    base: BaseResponse
+export interface FileInfo {
+    name: string,
+    size: string,
+    modified_time: string,
+    icon: string,
 }
 
-export function Ls<T extends BaseResponse>() {
+export interface LsResponse extends BaseResponse {
+    files: FileInfo[]
+    dirs: FileInfo[]
+}
+
+export function Ls() {
     const req: LsReqeust = { path: './' }
-    return get<T>({
+    return get<LsResponse>({
         url: '/ls',
         data: req
     })
