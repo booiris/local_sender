@@ -17,8 +17,8 @@ export interface LsResponse extends BaseResponse {
     dirs: FileInfo[]
 }
 
-export function Ls() {
-    const req: LsReqeust = { path: './' }
+export function Ls(path: string) {
+    const req: LsReqeust = { path: path }
     return get<LsResponse>({
         url: '/ls',
         data: req

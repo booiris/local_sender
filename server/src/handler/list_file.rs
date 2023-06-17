@@ -27,6 +27,9 @@ pub struct LsResponse {
     base: BaseResponse,
 }
 
+// TODO: optimize read limit
+const READ_LIMIT: usize = 100;
+
 pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, ErrorResponse> {
     let path = std::fs::canonicalize(req.path)
         .map_err(|e| "[ls] path invalid. err: ".to_owned() + &e.to_string())?;
@@ -43,10 +46,14 @@ pub async fn ls(Query(req): Query<LsRequest>) -> Result<Json<LsResponse>, ErrorR
 
     let mut files = vec![];
     let mut dirs = vec![];
-    for entry in (std::fs::read_dir(path)
+    for (cnt, entry) in (std::fs::read_dir(path)
         .map_err(|e| "[ls] can not read dir. err: ".to_owned() + &e.to_string())?)
     .flatten()
+    .enumerate()
     {
+        if cnt >= READ_LIMIT {
+            break;
+        }
         let path = entry.path();
         if let (Ok(meta), Some(file_name)) = (path.metadata(), path.file_name()) {
             if let (Some(file_name), Ok(modified)) = (file_name.to_str(), meta.modified()) {
