@@ -70,7 +70,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 7
+          version: latest
       - name: Install dependencies
         run: pnpm install
       - name: Build
