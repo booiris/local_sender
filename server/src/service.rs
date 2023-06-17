@@ -11,8 +11,9 @@ use tower::ServiceBuilder;
 use tower_governor::{errors::display_error, governor::GovernorConfigBuilder, GovernorLayer};
 use tower_http::{
     cors::{Any, CorsLayer},
-    trace::TraceLayer,
+    trace::{self, TraceLayer},
 };
+use tracing::Level;
 
 use crate::handler::*;
 
@@ -58,17 +59,20 @@ pub async fn run() -> shared::Result<()> {
         .route("/msg", post(message::message))
         .route(
             "/pull",
-            post(pull::pull).route_layer(rate_limit_layer.clone()),
+            get(pull::pull).route_layer(rate_limit_layer.clone()),
         )
         .route(
             "/pull_stream",
-            post(pull_stream::pull_stream).route_layer(rate_limit_layer.clone()),
+            get(pull_stream::pull_stream).route_layer(rate_limit_layer.clone()),
         )
         .route(
             "/push",
             post(push::push).route_layer(rate_limit_layer.clone()),
         )
-        .layer(TraceLayer::new_for_http())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(trace::DefaultMakeSpan::default().level(Level::INFO)),
+        )
         .layer(cors);
 
     let port = "18888".parse::<u16>()?;

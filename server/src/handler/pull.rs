@@ -32,6 +32,7 @@ pub struct PullResponse {
     method: PullMethod,
     // javascipt only support 53 bits integer
     size: String,
+    file_name: String,
 
     base: BaseResponse,
 }
@@ -56,6 +57,13 @@ pub async fn pull(Query(req): Query<PullRequest>) -> Result<Json<PullResponse>, 
             .into());
     }
 
+    let file_name = path
+        .file_name()
+        .expect("file name is empty")
+        .to_str()
+        .expect("file name is not utf8")
+        .to_owned();
+
     let mut file = tokio::fs::File::open(path)
         .await
         .map_err(|e| "[pull] can not open file. err: ".to_owned() + &e.to_string())?;
@@ -79,17 +87,20 @@ pub async fn pull(Query(req): Query<PullRequest>) -> Result<Json<PullResponse>, 
                 data: Some(data),
                 method: PullMethod::Immediate,
                 size: size.to_string(),
+                file_name,
                 ..Default::default()
             }))
         }
         STREAM_THRESHOLD..=ASYNC_THRESHOLD_LOW => Ok(Json(PullResponse {
             method: PullMethod::Stream,
             size: size.to_string(),
+            file_name,
             ..Default::default()
         })),
         ASYNC_THRESHOLD..=u64::MAX => Ok(Json(PullResponse {
             method: PullMethod::Async,
             size: size.to_string(),
+            file_name,
             ..Default::default()
         })),
     }
